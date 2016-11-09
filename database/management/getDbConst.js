@@ -16,7 +16,9 @@ var conString = [
     pwd,
     '@',
     addr,
-    ':5432/',
+    ':',
+    process.env.POSTGRES_PORT,
+    '/',
     name
 ].join('');
 

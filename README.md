@@ -35,21 +35,16 @@ More on those clients later.
 
 ## Quick start :
 
-* Install [docker](https://docs.docker.com/) and [docker-compose](http://docs.docker.com/compose/install/) and check docker daemon (or boot2docker) is running.
-
 * Make sure to have the port 5100 opened on your server.
 
 * clone the repository :
 
 ```
-git clone git@github.com:anthill/pheromon.git
+git clone git@github.com:6element/pheromon.git
 cd pheromon
 ```
 
 * Copy / Create the files `PRIVATE/*.json`
-
-* Install dependencies
-This will also set up the git precommit hook for eslint.
 
 ````
 npm install
@@ -88,23 +83,39 @@ This will also create a `latest.sql` backup file of the db in the `backup` folde
 
 ### Database
 
-* Initialisation
+#### Initialisation
+
+```bash
+sudo su - postgres
+# as 'postgres' user
+psql # opens psql prompt
+# to list database users
+\du
+# change password to the one you chose in PRIVATE/secret.json
+ALTER USER "postgres" WITH PASSWORD 'xxx -- password -- xxx';
+CREATE DATABASE pheromon;
+```
+
+(back to non-`postgres` user)
 If you run a service without an initialized db, you need to
 
-```
+```sh
 node database/management/init-db.js
 ```
 
-* Backups and restore :
+**WARNING** there may be port problems. It needs to be changed manually in the `nodemon.json` file for now.
+
+#### Backups and restore
+
 At anytime you can backup the db using
 
-```
+```sh
 node database/management/backup.js > backups/test.sql
 ```
 
 or restore an previous db with
 
-```
+```sh
 node database/management/restore.js backups/test.sql
 ```
 

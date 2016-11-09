@@ -29,7 +29,7 @@ connectToDB()
             console.log('Gz format');
             var gzip = zlib.createGunzip();
             var readStream = fs.createReadStream(inputFile);
-            var proc = spawn('psql', ['-p', 5432, '-h', dbConst.ADDR, '-U', dbConst.USER, '-d', dbConst.name]);
+            var proc = spawn('psql', ['-p', process.env.POSTGRES_PORT, '-h', dbConst.ADDR, '-U', dbConst.USER, '-d', dbConst.name]);
             
             return new Promise(function(resolve, reject){
                 readStream
@@ -44,7 +44,7 @@ connectToDB()
             });
         }
         else
-            spawn('psql', ['-p', 5432, '-h', dbConst.ADDR, '-U', dbConst.USER, '-w', '-f', inputFile]);
+            spawn('psql', ['-p', process.env.POSTGRES_PORT, '-h', dbConst.ADDR, '-U', dbConst.USER, '-w', '-f', inputFile]);
     })
     .catch(function(err){
         console.error('Could not load the data', err);

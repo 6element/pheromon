@@ -1,0 +1,7 @@
+{
+  "env": {
+    "VIRTUAL_PORT": "4000",
+    "BROKER_PORT": "7777",
+    "POSTGRES_PORT": "5433"
+  }
+}

@@ -23,7 +23,8 @@
     "dev": "npm-run-all --parallel 'dev:*'",
     "prod": "npm-run-all --parallel 'prod:*'",
     "postdev": "npm run watch",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "start": "npm-run-all --parallel 'dev:*'"
   },
   "repository": {
     "type": "git",
