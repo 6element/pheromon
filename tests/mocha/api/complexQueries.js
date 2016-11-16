@@ -16,11 +16,10 @@ var database = require('../../../database');
 var sendReq = require('../../../tools/sendNodeReq.js');
 var makeMap = require('../../../tools/makeMap.js');
 
-var PRIVATE = require('../../../PRIVATE/secret.json');
 var prepareAPI = require('../../../tools/prepareAPI.js');
 var apiOrigin = 'http://api:4000';
 var api = prepareAPI(sendReq, apiOrigin);
-var apiSecret = prepareAPI(sendReq, apiOrigin, PRIVATE.html_token);
+var apiSecret = prepareAPI(sendReq, apiOrigin, process.env.API_WRITE_SECRET);
 
 describe('Verify API', function() {
     this.timeout(2000);
@@ -50,7 +49,7 @@ describe('Verify API', function() {
                     lon: 2,
                     lat: 4
                 })
-            ]); 
+            ]);
         })
         .then(function(places){
             return Promise.all([

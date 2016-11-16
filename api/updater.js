@@ -8,8 +8,6 @@ var util = require('util');
 var ansible = require('node-ansible');
 var exec = require('child_process').exec;
 
-var BROKER_ADDRESS = process.env.NODE_ENV === 'test' ? 'broker' : 'localhost';
-
 // Start ansible for one or more sensor(s)
 function updateSensors(ansiblePlaybook, addresses) {
     return new Promise(function (resolve, reject) {
@@ -72,7 +70,7 @@ function PheromonUpdater (mqttToken, RANGE_START, RANGE_SIZE) {
 
     EventEmitter.call(self);
 
-    var mqttClient = mqtt.connect('mqtt://'+ BROKER_ADDRESS + ':' + process.env.BROKER_PORT, {
+    var mqttClient = mqtt.connect(process.env.BROKER_URL, {
         username: 'updater',
         password: mqttToken,
         clientId: 'updater'
@@ -154,7 +152,7 @@ function PheromonUpdater (mqttToken, RANGE_START, RANGE_SIZE) {
         // @4rzael hexa trick
         if ((sensorPort & 0xFFFF) !== sensorPort)
             sensorPort = 22;
-        
+
         mqttClient.removeAllListeners('message');
 
         console.log('==========',

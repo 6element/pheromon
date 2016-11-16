@@ -8,115 +8,115 @@ module.exports = function(app, debug){
 
     // --------------> sensor
     app.post('/sensor/create', isAdmin, function(req, res){
-	console.log('creating sensor', req.body);
+        console.log('creating sensor', req.body);
 
-	database.Sensors.create(req.body)
-	.then(function(data){
-	    debug('Sensor created', data);
-	    res.status(201).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t create Sensor in database');
-	    console.log('error in /sensor/create', error);
-	});
+        database.Sensors.create(req.body)
+        .then(function(data){
+            debug('Sensor created', data);
+            res.status(201).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t create Sensor in database');
+            console.log('error in /sensor/create', error);
+        });
     });
 
     app.post('/sensor/update', isAdmin, function(req, res){
-	var sim = req.body.sim;
+        var sim = req.body.sim;
 
-	if(Object.keys(req.body.delta).length !== 0){
-	    database.Sensors.update(sim, req.body.delta)
+        if(Object.keys(req.body.delta).length !== 0){
+            database.Sensors.update(sim, req.body.delta)
             .then(function(data){
                 res.status(200).send(data);
             })
             .catch(function(error){
-		res.status(500).send('Couldn\'t update Sensors database');
-		console.log('error in /sensor/update/' + sim, error);
+                res.status(500).send('Couldn\'t update Sensors database');
+                console.log('error in /sensor/update/' + sim, error);
             });
-	} else
-	    res.status(403).send({success: false, message: 'Nothing to update.'});
+        } else
+            res.status(403).send({success: false, message: 'Nothing to update.'});
     });
 
     app.get('/sensor/get/:sim', isAdmin, function(req, res){
-	var sim = req.params.sim;
-	console.log('requesting sensor sim', sim);
+        var sim = req.params.sim;
+        console.log('requesting sensor sim', sim);
 
-	database.Sensors.get(sim)
-	.then(function(data){
-	    // debug('All sensors', data);
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t get sensor from database');
-	    console.log('error in GET /sensor/' + sim, error);
-	});
+        database.Sensors.get(sim)
+        .then(function(data){
+            // debug('All sensors', data);
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t get sensor from database');
+            console.log('error in GET /sensor/' + sim, error);
+        });
     });
 
     app.get('/sensor/getAll', isAdmin, function(req, res){
-	database.Sensors.getAll()
-	.then(function(data){
-	    // debug('All sensors', data);
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t gett all sensors database');
-	    console.log('error in GET /sensor/all', error);
-	});
+        database.Sensors.getAll()
+        .then(function(data){
+            // debug('All sensors', data);
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t gett all sensors database');
+            console.log('error in GET /sensor/all', error);
+        });
     });
 
     app.delete('/sensor/delete/:sim', isAdmin, function(req, res){
-	var sim = req.params.sim;
-	console.log('deleting', sim);
+        var sim = req.params.sim;
+        console.log('deleting', sim);
 
-	database.Sensors.delete(sim)
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t delete Sensor from database');
-	    console.log('error in DELETE /sensor/' + sim, error);
-	});
+        database.Sensors.delete(sim)
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t delete Sensor from database');
+            console.log('error in DELETE /sensor/' + sim, error);
+        });
     });
 
     app.delete('/sensor/deleteAll', isAdmin, function(req, res){
-	console.log('deleting all sensors');
+        console.log('deleting all sensors');
 
-	database.Sensors.deleteAll()
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t delete all Sensors from database');
-	    console.log('error in DELETE /sensor/all', error);
-	});
+        database.Sensors.deleteAll()
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t delete all Sensors from database');
+            console.log('error in DELETE /sensor/all', error);
+        });
     });
 
     // --------------> place
     app.post('/place/create', isAdmin, function(req, res){
-	console.log('creating place', req.body);
+        console.log('creating place', req.body);
 
-	database.Places.create(req.body)
-	.then(function(data){
-	    debug('Place created', data);
-	    res.status(201).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t create Place in database');
-	    console.log('error in /place/create/', error);
-	});
+        database.Places.create(req.body)
+        .then(function(data){
+            debug('Place created', data);
+            res.status(201).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t create Place in database');
+            console.log('error in /place/create/', error);
+        });
     });
 
     app.post('/place/update', isAdmin, function(req, res){
-	var id = req.body.id;
+        var id = req.body.id;
 
-	database.Places.update(id, req.body.delta) // req.body.delta : {name,lat,lon}
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t update Places database');
-	    console.log('error in /place/update/' + id, error);
-	});
+        database.Places.update(id, req.body.delta) // req.body.delta : {name,lat,lon}
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t update Places database');
+            console.log('error in /place/update/' + id, error);
+        });
     });
 
     app.get('/place/get/:id', function(req, res){
@@ -129,7 +129,7 @@ module.exports = function(app, debug){
             res.status(200).send(data);
         })
         .catch(function(error){
-            res.status(500).send('Couldn\'t get place from database');
+            res.status(404).send('Couldn\'t get place from database');
             console.log('error in /place/get/' + id, error);
         });
     });
@@ -147,30 +147,30 @@ module.exports = function(app, debug){
     });
 
     app.delete('/place/delete/:id', isAdmin, function(req, res){
-	var id = req.params.id;
-	console.log('deleting place id', id);
+        var id = req.params.id;
+        console.log('deleting place id', id);
 
-	database.Places.delete(id)
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t delete Place from database');
-	    console.log('error in /place/delete/' + id, error);
-	});
+        database.Places.delete(id)
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t delete Place from database');
+            console.log('error in /place/delete/' + id, error);
+        });
     });
 
     app.delete('/place/deleteAll', isAdmin, function(req, res){
-	console.log('deleting all sensors');
+        console.log('deleting all sensors');
 
-	database.Places.deleteAll()
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t delete all Places from database');
-	    console.log('error in /place/deleteAll', error);
-	});
+        database.Places.deleteAll()
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t delete all Places from database');
+            console.log('error in /place/deleteAll', error);
+        });
     });
 
     // complex queries
@@ -206,17 +206,17 @@ module.exports = function(app, debug){
 
     // get latest measurement of one type for some sensors
     app.get('/sensorsLatestMeasurement/', function(req, res){
-	var type = req.query.type;
-	var sims = req.query.sims.split(',');
+        var type = req.query.type;
+        var sims = req.query.sims.split(',');
 
-	database.complexQueries.sensorsLatestMeasurement(sims, type)
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    console.log('error in /sensorsLatestMeasurement', error);
-	    res.status(500).send('Error in get /sensorsLatestMeasurement/');
-	});
+        database.complexQueries.sensorsLatestMeasurement(sims, type)
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            console.log('error in /sensorsLatestMeasurement', error);
+            res.status(500).send('Error in get /sensorsLatestMeasurement/');
+        });
     });
 
     // get various measurements of various types for various place
@@ -226,7 +226,6 @@ module.exports = function(app, debug){
         var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
         var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
 
-        
         database.complexQueries.getPlaceMeasurements(ids, types, start, end)
         .then(function(data){
             res.status(200).send(data);
@@ -239,36 +238,36 @@ module.exports = function(app, debug){
 
     // get various measurements of various types for various sensors
     app.get('/measurements/sensors', isAdmin, function(req, res){
-	var sims = req.query.sims.split(',');
-	var types = req.query.types.split(',');
-	var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
-	var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
+        var sims = req.query.sims.split(',');
+        var types = req.query.types.split(',');
+        var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
+        var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
 
-	database.complexQueries.getSensorsMeasurements(sims, types, start, end)
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t sensors measurements from database');
-	    console.log('error in /measurements/sensors/' + sims, error);
-	});
+        database.complexQueries.getSensorsMeasurements(sims, types, start, end)
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t sensors measurements from database');
+            console.log('error in /measurements/sensors/' + sims, error);
+        });
     });
 
     // get sensor measurements of a specified type without any processing.
     app.get('/measurements/sensor/raw', isAdmin, function(req, res) {
-	var sim = req.query.sim;
-	var type = req.query.type;
-	var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
-	var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
+        var sim = req.query.sim;
+        var type = req.query.type;
+        var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
+        var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
 
-	database.complexQueries.getSensorRawMeasurements(sim, type, start, end)
-	.then(function(data){
-	    res.status(200).send(data);
-	})
-	.catch(function(error){
-	    res.status(500).send('Couldn\'t sensors measurements from database');
-	    console.log('error in /measurements/sensor/raw ' + sim, error);
-	});
+        database.complexQueries.getSensorRawMeasurements(sim, type, start, end)
+        .then(function(data){
+            res.status(200).send(data);
+        })
+        .catch(function(error){
+            res.status(500).send('Couldn\'t sensors measurements from database');
+            console.log('error in /measurements/sensor/raw ' + sim, error);
+        });
     });
 
     // get place measurements of a specified type without any processing.

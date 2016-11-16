@@ -3,7 +3,7 @@
 'use strict';
 
 var spawn = require('child_process').spawn;
+var parse = require('url').parse;
+var url = parse(process.env.DATABASE_URL);
 
-var dbConst = require('./getDbConst.js');
-
-spawn('pg_dump', ['-p', process.env.POSTGRES_PORT, '-h', dbConst.ADDR, '-U', dbConst.USER, '-w'], {stdio: 'inherit'});
+spawn('pg_dump', ['-p', url.port, '-h', url.hostname, '-U', url.auth.username, '-w'], {stdio: 'inherit'});

@@ -13,8 +13,6 @@ var api = prepareAPI(sendReq);
 
 var errlog = console.error.bind(console);
 
-var PRIVATE = require('../../../../PRIVATE/mapbox.json');
-
 var BORDEAUX_COORDS = [44.84, -0.57];
 
 function safeMax(safeInt, unsafeInt) {
@@ -28,8 +26,8 @@ day = new Date(day).toString() !== 'Invalid Date' ? day : undefined;
 
 var topLevelStore = {
     day: day,
-    mapBoxToken: PRIVATE.token,
-    mapId: PRIVATE.map_id,
+    mapBoxToken: process.env.MAPBOX_TOKEN,
+    mapId: process.env.MAPBOX_MAP_ID,
     mapCenter: BORDEAUX_COORDS,
     placeMap: undefined,
     selectedPlaceMap: new Map(),
@@ -38,7 +36,7 @@ var topLevelStore = {
         api.measurementsPlaces({ids: [place.id], types: types})
         .then(function(measurements){
             console.log('place measurements', place, measurements);
-            
+
             // sort by asc time in case it's not already thus sorted
             measurements.sort(function(m1, m2){
                 return new Date(m1.date).getTime() - new Date(m2.date).getTime();
@@ -85,10 +83,10 @@ socket.on('data', function (measurement) {
 
     var value = measurement.value.length;
     var date = measurement.date;
-    
+
     // GET PLACE
     var place = topLevelStore.placeMap.get(id);
-    
+
     place.max = safeMax(place.max, value);
     place.latest = value;
 

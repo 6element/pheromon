@@ -8,7 +8,6 @@ chai.use(chaiAsPromised);
 var expect = chai.expect;
 
 var request = require('request');
-var PRIVATE = require('../../PRIVATE/secret.json');
 
 var database = require('../../database');
 var sendReq = require('../../tools/sendNodeReq');
@@ -19,7 +18,7 @@ var api = prepareAPI(sendReq, apiOrigin);
 
 
 describe('Broker', function() {
-        
+
     this.timeout(2000);
 
     var fakeSensor;
@@ -52,5 +51,5 @@ describe('Broker', function() {
 
         return expect(promise).to.be.rejected;
     });
-    
+
 });

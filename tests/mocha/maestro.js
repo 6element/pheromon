@@ -13,7 +13,6 @@ var assert = chai.assert;
 var io = require('socket.io-client');
 
 var request = require('request');
-var PRIVATE = require('../../PRIVATE/secret.json');
 
 var database = require('../../database');
 var sendReq = require('../../tools/sendNodeReq');
@@ -23,7 +22,7 @@ var createFakeSensor = require('../../tools/createFakeSensor');
 var prepareAPI = require('../../tools/prepareAPI.js');
 var apiOrigin = 'http://api:4000';
 var api = prepareAPI(sendReq, apiOrigin);
-var apiSecret = prepareAPI(sendReq, apiOrigin, PRIVATE.html_token);
+var apiSecret = prepareAPI(sendReq, apiOrigin, process.env.API_WRITE_SECRET);
 
 var socket = io(apiOrigin);
 
@@ -46,7 +45,7 @@ describe('Maestro testing', function(){
     // after all tests, clear the table
     after('Clearing Sensor table', function(){
 
-        return database.Measurements.deleteAll() 
+        return database.Measurements.deleteAll()
         .then(function(){
             return database.Sensors.deleteAll();
         });
@@ -59,7 +58,7 @@ describe('Maestro testing', function(){
         });
 
         describe('checkSensor', function() {
-        
+
             var sensor = {
                 name: 'Sensor1',
                 sim: '290'
@@ -116,7 +115,7 @@ describe('Maestro testing', function(){
         beforeEach('Creating Fake Sensor', function(){
             i++;
             simId = 'simNumber' + i;
-            return createFakeSensor(simId, PRIVATE.mqtt_token)
+            return createFakeSensor(simId, process.env.BROKER_TOKEN)
             .then(function(sensor){
                 fakeSensor = sensor;
             });
@@ -167,8 +166,8 @@ describe('Maestro testing', function(){
 
         it('should register output status update in DB', function () {
 
-            fakeSensor.publish('status/' + simId + '/wifi', 'recording');            
-            
+            fakeSensor.publish('status/' + simId + '/wifi', 'recording');
+
             return new Promise(function(resolve, reject){
                 setTimeout(function(){
                     resolve(apiSecret.getSensor(simId)
@@ -285,7 +284,7 @@ describe('Maestro testing', function(){
 
                 setTimeout(function () { // Wait for sensor to connect
                     socket.emit('cmd', {
-                        token: PRIVATE.cmd_token,
+                        token: process.env.SENSOR_WRITE_SECRET,
                         cmd: {
                             command: 'myCommand',
                             to: [simId]
@@ -409,8 +408,7 @@ describe('Maestro testing', function(){
                 }));
 
             });
-        });               
+        });
 
     });
 });
-

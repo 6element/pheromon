@@ -2,41 +2,41 @@
 
 var pg = require('pg');
 
-var CONNECTION_STRING = require('./getDbConst.js').CONNECTION_STRING;
+var CONNECTION_STRING = process.env.DATABASE_URL;
 
 var MAX_ATTEMPTS = 10;
 var INITIAL_TIMEOUT_TIME = 100;
 
 module.exports = function(){
     var attempts = 0;
-    
+
     return new Promise(function(resolve, reject){
-        
+
         (function tryConnect(time){
             setTimeout(function(){
-                
+
                 var client = new pg.Client(CONNECTION_STRING);
 
                 client.connect(function(err) {
                     if(err){
                         console.log('Couldn\'t connect to db', err);
                         if(attempts >= MAX_ATTEMPTS)
-                            reject(err); 
+                            reject(err);
                         else {
                             // wait twice more to give time and not overwhelm the database with useless attempts to connect
                             console.log('Retrying in ', 2*time);
-                            tryConnect(2*time); 
+                            tryConnect(2*time);
                         }
                     }
                     else{
                         resolve(client);
                     }
-                    
+
                     attempts++;
                 });
 
             }, time);
         })(INITIAL_TIMEOUT_TIME);
-        
+
     });
 };

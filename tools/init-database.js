@@ -23,7 +23,7 @@ databaseP
     .then(function(){
         console.log("Success!");
         process.exit();
-    })
+    });
 })
 .catch(function(err){
     console.error("Couldn't connect to database", err);

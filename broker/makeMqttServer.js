@@ -3,21 +3,21 @@
 var mosca = require('mosca');
 
 var debug = require('../tools/debug');
+var parse = require('url').parse;
 
 var pubsubsettings = {
     type: 'redis',
     redis: require('redis'),
-    db: 12,
-    host: process.env.REDIS_PORT_6379_TCP_ADDR || 'localhost', // localhost is for prod, dev, alpha. The other is for tests
+    url: process.env.REDIS_URL,
     return_buffers: true
 };
 
 var moscaSettings = {
-    port: parseInt(process.env.BROKER_PORT, 10),
+    port: parseInt(parse(process.env.BROKER_URL).port, 10),
     backend: pubsubsettings,
     persistence: {
         factory: mosca.persistence.Redis,
-        host: process.env.REDIS_PORT_6379_TCP_ADDR || 'localhost' // localhost is for prod, dev, alpha. The other is for tests
+        url: process.env.REDIS_URL
     }
 };
 
