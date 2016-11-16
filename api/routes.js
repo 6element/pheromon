@@ -1,139 +1,122 @@
 'use strict';
 
 var database = require('../database');
-var PRIVATE = require('../PRIVATE/secret.json');
 var DEBUG = process.env.NODE_ENV === 'development';
+var isAdmin = require('./is-authenticated')(DEBUG);
 
 module.exports = function(app, debug){
 
     // --------------> sensor
-    app.post('/sensor/create', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) {
-            
-            console.log('creating sensor', req.body);
+    app.post('/sensor/create', isAdmin, function(req, res){
+	console.log('creating sensor', req.body);
 
-            database.Sensors.create(req.body)
-            .then(function(data){
-                debug('Sensor created', data);
-                res.status(201).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t create Sensor in database');
-                console.log('error in /sensor/create', error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.Sensors.create(req.body)
+	.then(function(data){
+	    debug('Sensor created', data);
+	    res.status(201).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t create Sensor in database');
+	    console.log('error in /sensor/create', error);
+	});
     });
 
-    app.post('/sensor/update', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) {
-            var sim = req.body.sim;
+    app.post('/sensor/update', isAdmin, function(req, res){
+	var sim = req.body.sim;
 
-            if(Object.keys(req.body.delta).length !== 0){
-                database.Sensors.update(sim, req.body.delta)
-                .then(function(data){
-                    res.status(200).send(data);
-                })
-                .catch(function(error){
-                    res.status(500).send('Couldn\'t update Sensors database');
-                    console.log('error in /sensor/update/' + sim, error);
-                });
-            } else
-                res.status(403).send({success: false, message: 'Nothing to update.'});
-        } else res.status(403).send({success: false, message: 'No token provided.'});
-    });
-
-    app.get('/sensor/get/:sim', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) {
-            var sim = req.params.sim;
-            console.log('requesting sensor sim', sim);
-
-            database.Sensors.get(sim)
-            .then(function(data){
-                // debug('All sensors', data);
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t get sensor from database');
-                console.log('error in GET /sensor/' + sim, error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
-    });
-
-    app.get('/sensor/getAll', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) { 
-            database.Sensors.getAll()
-            .then(function(data){
-                // debug('All sensors', data);
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t gett all sensors database');
-                console.log('error in GET /sensor/all', error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
-    });
-
-    app.delete('/sensor/delete/:sim', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) { 
-            var sim = req.params.sim;
-            console.log('deleting', sim);
-
-            database.Sensors.delete(sim)
+	if(Object.keys(req.body.delta).length !== 0){
+	    database.Sensors.update(sim, req.body.delta)
             .then(function(data){
                 res.status(200).send(data);
             })
             .catch(function(error){
-                res.status(500).send('Couldn\'t delete Sensor from database');
-                console.log('error in DELETE /sensor/' + sim, error);
+		res.status(500).send('Couldn\'t update Sensors database');
+		console.log('error in /sensor/update/' + sim, error);
             });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	} else
+	    res.status(403).send({success: false, message: 'Nothing to update.'});
     });
 
-    app.delete('/sensor/deleteAll', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) {     
-            console.log('deleting all sensors');
+    app.get('/sensor/get/:sim', isAdmin, function(req, res){
+	var sim = req.params.sim;
+	console.log('requesting sensor sim', sim);
 
-            database.Sensors.deleteAll()
-            .then(function(data){
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t delete all Sensors from database');
-                console.log('error in DELETE /sensor/all', error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.Sensors.get(sim)
+	.then(function(data){
+	    // debug('All sensors', data);
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t get sensor from database');
+	    console.log('error in GET /sensor/' + sim, error);
+	});
+    });
+
+    app.get('/sensor/getAll', isAdmin, function(req, res){
+	database.Sensors.getAll()
+	.then(function(data){
+	    // debug('All sensors', data);
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t gett all sensors database');
+	    console.log('error in GET /sensor/all', error);
+	});
+    });
+
+    app.delete('/sensor/delete/:sim', isAdmin, function(req, res){
+	var sim = req.params.sim;
+	console.log('deleting', sim);
+
+	database.Sensors.delete(sim)
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t delete Sensor from database');
+	    console.log('error in DELETE /sensor/' + sim, error);
+	});
+    });
+
+    app.delete('/sensor/deleteAll', isAdmin, function(req, res){
+	console.log('deleting all sensors');
+
+	database.Sensors.deleteAll()
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t delete all Sensors from database');
+	    console.log('error in DELETE /sensor/all', error);
+	});
     });
 
     // --------------> place
-    app.post('/place/create', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) {       
-            console.log('creating place', req.body);
+    app.post('/place/create', isAdmin, function(req, res){
+	console.log('creating place', req.body);
 
-            database.Places.create(req.body)
-            .then(function(data){
-                debug('Place created', data);
-                res.status(201).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t create Place in database');
-                console.log('error in /place/create/', error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.Places.create(req.body)
+	.then(function(data){
+	    debug('Place created', data);
+	    res.status(201).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t create Place in database');
+	    console.log('error in /place/create/', error);
+	});
     });
 
-    app.post('/place/update', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) { 
-            var id = req.body.id;
+    app.post('/place/update', isAdmin, function(req, res){
+	var id = req.body.id;
 
-            database.Places.update(id, req.body.delta) // req.body.delta : {name,lat,lon}
-            .then(function(data){
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t update Places database');
-                console.log('error in /place/update/' + id, error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.Places.update(id, req.body.delta) // req.body.delta : {name,lat,lon}
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t update Places database');
+	    console.log('error in /place/update/' + id, error);
+	});
     });
 
     app.get('/place/get/:id', function(req, res){
@@ -163,35 +146,31 @@ module.exports = function(app, debug){
         });
     });
 
-    app.delete('/place/delete/:id', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) { 
-            var id = req.params.id;
-            console.log('deleting place id', id);
+    app.delete('/place/delete/:id', isAdmin, function(req, res){
+	var id = req.params.id;
+	console.log('deleting place id', id);
 
-            database.Places.delete(id)
-            .then(function(data){
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t delete Place from database');
-                console.log('error in /place/delete/' + id, error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.Places.delete(id)
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t delete Place from database');
+	    console.log('error in /place/delete/' + id, error);
+	});
     });
 
-    app.delete('/place/deleteAll', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) {  
-            console.log('deleting all sensors');
+    app.delete('/place/deleteAll', isAdmin, function(req, res){
+	console.log('deleting all sensors');
 
-            database.Places.deleteAll()
-            .then(function(data){
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t delete all Places from database');
-                console.log('error in /place/deleteAll', error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.Places.deleteAll()
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t delete all Places from database');
+	    console.log('error in /place/deleteAll', error);
+	});
     });
 
     // complex queries
@@ -227,20 +206,17 @@ module.exports = function(app, debug){
 
     // get latest measurement of one type for some sensors
     app.get('/sensorsLatestMeasurement/', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) { 
-            
-            var type = req.query.type;
-            var sims = req.query.sims.split(',');
+	var type = req.query.type;
+	var sims = req.query.sims.split(',');
 
-            database.complexQueries.sensorsLatestMeasurement(sims, type)
-            .then(function(data){
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                console.log('error in /sensorsLatestMeasurement', error);
-                res.status(500).send('Error in get /sensorsLatestMeasurement/');
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.complexQueries.sensorsLatestMeasurement(sims, type)
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    console.log('error in /sensorsLatestMeasurement', error);
+	    res.status(500).send('Error in get /sensorsLatestMeasurement/');
+	});
     });
 
     // get various measurements of various types for various place
@@ -262,41 +238,37 @@ module.exports = function(app, debug){
     });
 
     // get various measurements of various types for various sensors
-    app.get('/measurements/sensors', function(req, res){
-        if(req.query.s === PRIVATE.html_token || DEBUG) {  
-            var sims = req.query.sims.split(',');
-            var types = req.query.types.split(',');
-            var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
-            var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
+    app.get('/measurements/sensors', isAdmin, function(req, res){
+	var sims = req.query.sims.split(',');
+	var types = req.query.types.split(',');
+	var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
+	var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
 
-            database.complexQueries.getSensorsMeasurements(sims, types, start, end)
-            .then(function(data){
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t sensors measurements from database');
-                console.log('error in /measurements/sensors/' + sims, error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.complexQueries.getSensorsMeasurements(sims, types, start, end)
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t sensors measurements from database');
+	    console.log('error in /measurements/sensors/' + sims, error);
+	});
     });
 
     // get sensor measurements of a specified type without any processing.
-    app.get('/measurements/sensor/raw', function(req, res) {
-        if(req.query.s === PRIVATE.html_token || DEBUG) {  
-            var sim = req.query.sim;
-            var type = req.query.type;
-            var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
-            var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
+    app.get('/measurements/sensor/raw', isAdmin, function(req, res) {
+	var sim = req.query.sim;
+	var type = req.query.type;
+	var start = (req.query.start === undefined) ? undefined : new Date(req.query.start);
+	var end = (req.query.end === undefined) ? undefined : new Date(req.query.end);
 
-            database.complexQueries.getSensorRawMeasurements(sim, type, start, end)
-            .then(function(data){
-                res.status(200).send(data);
-            })
-            .catch(function(error){
-                res.status(500).send('Couldn\'t sensors measurements from database');
-                console.log('error in /measurements/sensor/raw ' + sim, error);
-            });
-        } else res.status(403).send({success: false, message: 'No token provided.'});
+	database.complexQueries.getSensorRawMeasurements(sim, type, start, end)
+	.then(function(data){
+	    res.status(200).send(data);
+	})
+	.catch(function(error){
+	    res.status(500).send('Couldn\'t sensors measurements from database');
+	    console.log('error in /measurements/sensor/raw ' + sim, error);
+	});
     });
 
     // get place measurements of a specified type without any processing.

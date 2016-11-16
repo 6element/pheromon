@@ -1,26 +1,26 @@
 FROM node:4.2
 
-MAINTAINER Alexandre Vallette <alexandre.vallette@ants.builders>
-
-RUN mkdir /pheromon
 WORKDIR /pheromon
 
-RUN npm install nodemon -g
+COPY package.json ./package.json
 
-RUN apt-get update -y
-RUN apt-get upgrade -y
+RUN apt-get update -y \
+  && apt-get upgrade -y \
+  && apt-get install -y --no-install-recommends wget ca-certificates \
+    postgresql-9.4 \
+    python2.7 python-dev python-pip \
+  && pip install ansible \
+  && mkdir /etc/ansible \
+  && npm install
 
-# install pgdump and related
-
-RUN apt-get install -y wget ca-certificates
-RUN apt-get install -y postgresql-9.4 
-
-# install ansible and related
-RUN apt-get install -y python2.7
-RUN apt-get install -y python-dev
-RUN apt-get install -y python-pip
-RUN pip install ansible
-RUN mkdir /etc/ansible
+# Node app
+COPY ./api ./api
+COPY ./broker ./broker
+COPY ./database ./database
+COPY ./tests ./tests
+COPY ./tools ./tools
+COPY ./updateFiles ./updateFiles
+COPY ./.eslintrc ./eslintrc
 
 # Ansible config
 RUN echo '[ssh_connection]' >> /etc/ansible/ansible.cfg
@@ -31,3 +31,5 @@ RUN echo '' >> /etc/ssh/ssh_config
 RUN echo 'Host *' >> /etc/ssh/ssh_config
 RUN echo '    StrictHostKeyChecking no' >> /etc/ssh/ssh_config
 RUN echo '    UserKnownHostsFile=/dev/null' >> /etc/ssh/ssh_config
+
+CMD ["npm", "start"]
