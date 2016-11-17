@@ -7,9 +7,16 @@ services:
    depends_on:
       - db
       - broker
+   ports:
+     - "4000:4000"
    environment:
       - BROKER_URL=mqtt://broker:1883
+      - BROKER_SECRET=DANGER_LOCALHOST
+      - API_WRITE_SECRET=dev
       - DATABASE_URL=postgres://postgres:elements@db:5432/postgres
+      - SENSOR_API_HOST=localhost:4000
+      - MAPBOX_MAP_ID=
+      - MAPBOX_TOKEN=
       - PORT=4000
       # Updater variables
       - UPDATER_RANGE_START=2200
@@ -36,8 +43,9 @@ services:
       - redis
     environment:
       - BROKER_URL=mqtt://broker:1883
+      - BROKER_SECRET=DANGER_LOCALHOST
       - DATABASE_URL=postgres://postgres:elements@db:5432/postgres
-      - REDIS_URL=redis://redis:6379/12
+      - REDIS_URL=redis://redis:6379/1
     volumes:
       - ./:/pheromon
 
@@ -47,4 +55,4 @@ services:
       - POSTGRES_PASSWORD=elements
 
   redis:
-    image: redis:3
+    image: redis:3-alpine

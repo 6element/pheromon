@@ -5,20 +5,26 @@ var mosca = require('mosca');
 var debug = require('../tools/debug');
 var parse = require('url').parse;
 
-var pubsubsettings = {
+var redisUrl = parse(process.env.REDIS_URL);
+var redisSettings = {
+  host: redisUrl.hostname,
+  port: redisUrl.port,
+  db: redisUrl.pathname.slice(1) || 0,
+  password: (redisUrl.auth || {}).password
+};
+
+var pubsubsettings = Object.assign({
     type: 'redis',
     redis: require('redis'),
-    url: process.env.REDIS_URL,
     return_buffers: true
-};
+}, redisSettings);
 
 var moscaSettings = {
     port: parseInt(parse(process.env.BROKER_URL).port, 10),
     backend: pubsubsettings,
-    persistence: {
-        factory: mosca.persistence.Redis,
-        url: process.env.REDIS_URL
-    }
+    persistence: Object.assign({
+        factory: mosca.persistence.Redis
+    }, redisSettings)
 };
 
 module.exports = function(authToken){
