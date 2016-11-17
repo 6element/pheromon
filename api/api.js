@@ -35,7 +35,9 @@ app.use(function(req, res, next) {
 });
 
 app.use(compression());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
 
 app.use('/leaflet.css', express.static(path.join(__dirname, '../node_modules/leaflet/dist/leaflet.css')));
