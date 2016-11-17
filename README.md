@@ -1,6 +1,6 @@
 # Pheromon
 
-[![Build Status](https://travis-ci.org/anthill/pheromon.svg)](https://travis-ci.org/anthill/pheromon)
+[![Build Status](https://travis-ci.org/6element/pheromon.svg)](https://travis-ci.org/6element/pheromon)
 
 ## Overview
 
@@ -8,7 +8,7 @@
 
 **Learn more about 6element in our [dedicated page](http://ants.builders/pages/6element.html) or in [this Medium article](https://medium.com/ants-blog/6element-534ffbe2a60f)**.
 
-**Use our open API, you can consult the [dedicated wiki](https://github.com/anthill/pheromon/wiki/API-documentation)**.
+**Use our open API, you can consult the [dedicated wiki](https://github.com/6element/pheromon/wiki/API-documentation)**.
 
 ![Image Alt](https://docs.google.com/drawings/d/1a-9oJr7eGid59iTj12dici8-Qb83j9Y7QbTz34jCo_M/pub?w=960&h=720)
 
@@ -19,7 +19,7 @@ All the messages are persisted in a database that can be queried by a API able t
 
 ## 6brain
 
-**[6brain](https://github.com/anthill/6brain)** is the sensor counterpart of Pheromon. It is the code you need to have on your sensors so that they can communicate with Pheromon.
+**[6brain](https://github.com/6element/6brain)** is the sensor counterpart of Pheromon. It is the code you need to have on your sensors so that they can communicate with Pheromon.
 
 ## Clients
 
@@ -141,7 +141,7 @@ The communication protocol is composed of 3 elements:
 - `mySensorSimId`, when maestro sends command to sensor. The content is a string of the command.
 - `all`, when maestro sends command to all registered sensors. The content is a string of the command.
 
-### Initialization sequence 
+### Initialization sequence
 
 We don't want sensors to have a manually hard-coded id (for deployment's simplicity) so we use SIM id (queried with AT command):
 
@@ -158,7 +158,7 @@ We don't want sensors to have a manually hard-coded id (for deployment's simplic
 Each time the sensor's status changes, a message is sent to the maestro to update the DB and react accordingly depending on the situation. Status can be of 3 types:
 - `client`: state of communication between sensor and kerrigan server
 - `signal`: power of signal between sensor and kerrigan server
-- `wifi`: wifi monitoring state of sensor 
+- `wifi`: wifi monitoring state of sensor
 - `blue`: bluetooth monitoring state of sensor
 
 **Sequence**
@@ -179,7 +179,7 @@ By default, sensor has measurement capabilities (for wifi and bluetooth). Every 
 
 ### Command sending sequence
 
-You can send [commands](https://github.com/anthill/pheromon/blob/master/api/clients/Admin/ReadMe.md) to the sensors.
+You can send [commands](https://github.com/6element/pheromon/blob/master/api/clients/Admin/ReadMe.md) to the sensors.
 
 **Sequence**
 
@@ -236,7 +236,7 @@ GatewayPorts yes
 sudo usermod -s /usr/sbin/nologin sensorSSH;
 ```
 
-add `"ip": "kerrigan"` in pheromon `PRIVATE.json` where kerrigan is the name of the host in `.ssh/config` 
+add `"ip": "kerrigan"` in pheromon `PRIVATE.json` where kerrigan is the name of the host in `.ssh/config`
 
 ## PRIVATE files
 
