@@ -31,6 +31,9 @@
     "type": "git",
     "url": "https://github.com/anthill/pheromon.git"
   },
+  "engine": {
+    "node": "4.x.x"
+  },
   "keywords": [
     "app",
     "mobile",
