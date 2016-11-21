@@ -34,6 +34,11 @@
   "engines": {
     "node": "4.x.x"
   },
+  "browserify": {
+    "transform": [
+      "envify"
+    ]
+  },
   "keywords": [
     "app",
     "mobile",
@@ -54,6 +59,7 @@
     "browserify": "^10.2.0",
     "compression": "^1.4.4",
     "dygraphs": "^1.1.1",
+    "envify": "^3.4.1",
     "es6-shim": "^0.31.2",
     "express": "^4.12.4",
     "immutable": "^3.7.4",
