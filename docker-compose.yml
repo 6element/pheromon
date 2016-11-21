@@ -13,6 +13,7 @@ services:
       - BROKER_URL=mqtt://broker:1883
       - BROKER_SECRET=DANGER_LOCALHOST
       - API_WRITE_SECRET=dev
+      - API_ENDPOINT=http://localhost:4000
       - DATABASE_URL=postgres://postgres:elements@db:5432/postgres
       - SENSOR_API_HOST=localhost:4000
       - MAPBOX_MAP_ID=

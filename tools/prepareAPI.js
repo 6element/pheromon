@@ -4,7 +4,7 @@
 function makeSearchString(obj){
 
     if(obj === undefined) return '';
-    
+
     // http://stackoverflow.com/a/3608791
     return '?' + Object.keys(obj).map(function(k){
         return encodeURI(k) + '=' + encodeURI(obj[k]);
@@ -84,7 +84,3 @@ module.exports = function(request, origin, token){
         }
     };
 };
-
-
-
-

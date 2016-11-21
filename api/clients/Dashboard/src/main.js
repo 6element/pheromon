@@ -9,7 +9,7 @@ var prepareAPI = require('../../../../tools/prepareAPI.js');
 var sendReq = require('../../../../tools/sendReq.js');
 var makeMap = require('../../../../tools/makeMap.js');
 
-var api = prepareAPI(sendReq);
+var api = prepareAPI(sendReq, process.env.API_ENDPOINT);
 
 var errlog = console.error.bind(console);
 

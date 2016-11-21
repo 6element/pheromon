@@ -47,8 +47,9 @@ npm install
 ### Environment variables
 
 | name                | required | type   | defaults    | description
-| ---                 | ---      | ---    | ---         | ---         
+| ---                 | ---      | ---    | ---         | ---
 | `BROKER_SECRET`     | ☑️       | string |             | Token for client-side broker write capability
+| `API_ENDPOINT`      | ☑️       | string |             | HTTP API endpoint. Eg: `https://pheromon.6element.fr`
 | `API_WRITE_SECRET`  | ☑️       | string |             | Token to check against for API write calls
 | `SENSOR_WRITE_SECRET`| ☑️      | string |             | Token to check against for sensor write calls
 | `REDIS_URL`         | ☑️       | string |             | Eg: `redis://...`

@@ -45,7 +45,7 @@ while ((match = search.exec(query)))
    urlParams[decode(match[1])] = decode(match[2]);
 
 
-var api = prepareAPI(sendReq, '', urlParams.s);
+var api = prepareAPI(sendReq, process.env.API_ENDPOINT, urlParams.s);
 
 function render(){
     React.render(new Application(topLevelStore), document.body);
