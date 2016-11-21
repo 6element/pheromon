@@ -4,9 +4,9 @@
   "description": "Reducing waste with sensors and an app",
   "main": "index.js",
   "scripts": {
-    "postinstall": "if [ -d .git ]; then cp ./git-hooks/pre-commit ./.git/hooks/pre-commit; chmod a+x ./.git/hooks/pre-commit; fi",
+    "postinstall": "npm run install-git-hooks && npm run build",
+    "install-git-hooks": "if [ -d .git ]; then cp ./git-hooks/pre-commit ./.git/hooks/pre-commit; chmod a+x ./.git/hooks/pre-commit; fi",
     "lint": "eslint .",
-    "prebuild": "npm install",
     "build:dashboard": "browserify api/clients/Dashboard/src/main.js -o api/clients/Dashboard-browserify-bundle.js -v",
     "build:admin": "browserify api/clients/Admin/src/main.js -o api/clients/Admin-browserify-bundle.js -v",
     "build": "npm-run-all --parallel 'build:*'",
