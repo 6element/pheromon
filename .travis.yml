@@ -1,27 +1,18 @@
-sudo: required
-
+sudo: false
 language: node_js
-node_js:
-  - "0.10"
+node_js: v4
 
 env:
-  - COMPOSE_VERSION=1.4.2 DOCKER_CLIENT_TIMEOUT=1000
+  - COMPOSE_VERSION=1.8.1 DOCKER_CLIENT_TIMEOUT=1000 NODE_ENV=test
 
 services:
   - docker
 
 before_install:
- - curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose-bin
- - chmod +x docker-compose-bin
- - sudo mv docker-compose-bin /usr/local/bin/docker-compose
- - sudo service docker restart ; sleep 10
+ - curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+ - chmod +x docker-compose
 
-before_script:
- - mv PRIVATE/secret.json.template PRIVATE/secret.json
- - mv PRIVATE/mapbox.json.template PRIVATE/mapbox.json
-
-script:
-- npm run test
+script: ./docker-compose run -e NODE_ENV api 'npm test'
 
 notifications:
   webhooks:

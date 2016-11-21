@@ -10,11 +10,10 @@ chai.use(chaiAsPromised);
 var expect = chai.expect;
 
 var prepareAPI = require('../../../tools/prepareAPI.js');
-var PRIVATE = require('../../../PRIVATE/secret.json');
 
 var origin = 'http://api:4000';
 // var origin = 'http://192.168.59.103:4000';
-var api = prepareAPI(sendReq, origin, PRIVATE.html_token);
+var api = prepareAPI(sendReq, origin, process.env.API_WRITE_SECRET);
 
 
 describe('Verify API', function() {
@@ -34,7 +33,7 @@ describe('Verify API', function() {
         describe('Creation', function(){
 
             it('/place/create', function () {
-                
+
                 var place = {
                     name: 'Place1',
                     lat: 44.840450,
@@ -116,7 +115,7 @@ describe('Verify API', function() {
                     expect(44.840450 - parseFloat(deleted.lat)).to.be.below(0.0001);
                     expect(-0.570468 - parseFloat(deleted.lon)).to.be.below(0.0001);
                 });
-                
+
 
             });
 
@@ -138,7 +137,7 @@ describe('Verify API', function() {
                 });
 
                 return Promise.all(creationPs);
-            
+
             });
 
             it('/place/deleteAll', function () {
@@ -167,7 +166,7 @@ describe('Verify API', function() {
                 .then(function(result){
                     id = result.id;
                 });
-                
+
             });
 
             it('/place/get', function () {
@@ -198,7 +197,7 @@ describe('Verify API', function() {
                 });
 
                 return Promise.all(creationPs);
-                
+
             });
 
             it('/place/getAll', function () {
@@ -212,6 +211,3 @@ describe('Verify API', function() {
         });
     });
 });
-
-
-

@@ -11,11 +11,10 @@ chai.use(chaiAsPromised);
 var expect = chai.expect;
 
 var prepareAPI = require('../../../tools/prepareAPI.js');
-var PRIVATE = require('../../../PRIVATE/secret.json');
 
 var origin = 'http://api:4000';
 // var origin = 'http://192.168.59.103:4000';
-var api = prepareAPI(sendReq, origin, PRIVATE.html_token);
+var api = prepareAPI(sendReq, origin, process.env.API_WRITE_SECRET);
 
 
 describe('Verify API', function() {
@@ -75,7 +74,7 @@ describe('Verify API', function() {
                     sim: sensor.sim,
                     delta: delta
                 };
-                
+
                 return api.updateSensor(updateData)
                 .then(function(updated){
                     expect(updated.name).to.deep.equal('Pikachu');
@@ -125,7 +124,7 @@ describe('Verify API', function() {
                 });
 
                 return Promise.all(creationPs);
-                
+
             });
 
             it('/sensor/deleteAll', function () {
@@ -179,7 +178,7 @@ describe('Verify API', function() {
                 });
 
                 return Promise.all(creationPs);
-                
+
             });
 
             it('/sensor/getAll', function () {

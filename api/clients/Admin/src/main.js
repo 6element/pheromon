@@ -11,8 +11,6 @@ var prepareAPI = require('../../../../tools/prepareAPI.js');
 var sendReq = require('../../../../tools/sendReq.js');
 var makeMap = require('../../../../tools/makeMap.js');
 
-var PRIVATE = require('../../../../PRIVATE/secret.json');
-
 var dbStatusMap = require('./dbStatusMap.js');
 
 var socket = io();
@@ -47,7 +45,7 @@ while ((match = search.exec(query)))
    urlParams[decode(match[1])] = decode(match[2]);
 
 
-var api = prepareAPI(sendReq, '', urlParams.s);
+var api = prepareAPI(sendReq, process.env.API_ENDPOINT, urlParams.s);
 
 function render(){
     React.render(new Application(topLevelStore), document.body);
@@ -183,7 +181,7 @@ function createSensorInDb(data) {
 var updatingID;
 
 function refreshData(){
-    
+
     console.log('Refresh data');
 
     var placesP = api.getAllPlacesInfos();
@@ -217,15 +215,15 @@ function refreshData(){
 
             topLevelStore.placeMap = placeMap;
         }
-        
+
         if (sensors){
             // sorting sensors by id
             sensors.sort(function(a, b){
                 return a.id > b.id ? 1 : -1;
             });
-            
+
             var sensorMap = makeMap(sensors, 'id');
-            
+
             topLevelStore.sensorMap = sensorMap;
 
             var measurementsPs = [];
@@ -247,7 +245,7 @@ function refreshData(){
                                 var receivedMeasurementRecently = new Date().getTime() - new Date(sensor.lastMeasurementDate || 0).getTime() <= 12 * HOUR;
 
                                 var isConnected = wasUpdatedRecently || receivedMeasurementRecently;
-                
+
                                 if (!isConnected){
                                     sensor.client_status = 'disconnected';
                                     sensor.outputs.forEach(function(output){
@@ -306,7 +304,7 @@ function sendCommand(command, selectedAntSet){
         });
 
         socket.emit('cmd', {
-            token: PRIVATE.cmd_token,
+            token: process.env.SENSOR_WRITE_SECRET,
             cmd: {
                 command: command,
                 to: sims
@@ -363,7 +361,7 @@ function sendCommand(command, selectedAntSet){
         // update everything
         updateSensorInDb(toUpdate);
     }
-    
+
 }
 
 
@@ -376,7 +374,7 @@ socket.on('status', function (msg) {
     // GET UPDATING SENSOR ID
     var id = msg.sensorId;
     console.log('UPDATING STATUS', id);
-    
+
     updatingID = id;
     refreshData();
 });
@@ -385,6 +383,6 @@ socket.on('data', function (msg) {
 
     // GET UPDATING SENSOR ID
     console.log('RECEIVING DATA', msg);
-    
+
     refreshData();
 });

@@ -33,24 +33,36 @@ You can also administrate your sensors with the **Admin**.
 
 More on those clients later.
 
-## Quick start :
+## Quick start
 
 * Make sure to have the port 5100 opened on your server.
-
 * clone the repository :
 
 ```
 git clone git@github.com:6element/pheromon.git
 cd pheromon
+npm install
 ```
 
-* Copy / Create the files `PRIVATE/*.json`
+### Environment variables
 
-````
-npm install
-````
-
-You need to have VIRTUAL_PORT and BROKER_PORT set as environment variables.
+| name                | required | type   | defaults    | description
+| ---                 | ---      | ---    | ---         | ---
+| `BROKER_SECRET`     | ☑️       | string |             | Token for client-side broker write capability
+| `API_ENDPOINT`      | ☑️       | string |             | HTTP API endpoint. Eg: `https://pheromon.6element.fr`
+| `API_WRITE_SECRET`  | ☑️       | string |             | Token to check against for API write calls
+| `SENSOR_WRITE_SECRET`| ☑️      | string |             | Token to check against for sensor write calls
+| `REDIS_URL`         | ☑️       | string |             | Eg: `redis://...`
+| `BROKER_URL`        | ☑️       | string |             | Eg: `mqtt://...`
+| `DATABASE_URL`      | ☑️       | string |             | Eg: `postgres://...`
+| `SENSOR_API_HOST`   |         | string |             | Eg: `localhost`
+| `MAPBOX_TOKEN`      | ☑️       | string |             |
+| `MAPBOX_MAP_ID`     | ☑️       | string |             | Id of your Mapbox map background
+| `PORT`              |          | integer| 3000        | HTTP port of the Node app
+| `SENSOR_HEALTHCHECK_PERIOD` |  | integer| 300         | Sensors health check time interval (in seconds)
+| `SENSOR_HEALTHCHECK_START_HOUR`|| integer| 7          |
+| `SENSOR_HEALTHCHECK_STOP_HOUR`|| integer| 16          |
+| `NODE_ENV`          |          | string | development | Node app mode
 
 ### In dev
 Use this for development.
@@ -91,7 +103,6 @@ sudo su - postgres
 psql # opens psql prompt
 # to list database users
 \du
-# change password to the one you chose in PRIVATE/secret.json
 ALTER USER "postgres" WITH PASSWORD 'xxx -- password -- xxx';
 CREATE DATABASE pheromon;
 ```
@@ -103,7 +114,7 @@ If you run a service without an initialized db, you need to
 node database/management/init-db.js
 ```
 
-**WARNING** there may be port problems. It needs to be changed manually in the `nodemon.json` file for now.
+**WARNING** there may be port problems. Provide a different `PORT` environment variable then.
 
 #### Backups and restore
 
@@ -119,7 +130,7 @@ or restore an previous db with
 node database/management/restore.js backups/test.sql
 ```
 
-you can also use a gziped file (comming from the automated backup for example).
+you can also use a gziped file (originating from an automated backup for example).
 
 ## MQTT
 MQTT is the communication protocol between the server and the sensors.
@@ -141,7 +152,7 @@ The communication protocol is composed of 3 elements:
 - `mySensorSimId`, when maestro sends command to sensor. The content is a string of the command.
 - `all`, when maestro sends command to all registered sensors. The content is a string of the command.
 
-### Initialization sequence 
+### Initialization sequence
 
 We don't want sensors to have a manually hard-coded id (for deployment's simplicity) so we use SIM id (queried with AT command):
 
@@ -158,7 +169,7 @@ We don't want sensors to have a manually hard-coded id (for deployment's simplic
 Each time the sensor's status changes, a message is sent to the maestro to update the DB and react accordingly depending on the situation. Status can be of 3 types:
 - `client`: state of communication between sensor and kerrigan server
 - `signal`: power of signal between sensor and kerrigan server
-- `wifi`: wifi monitoring state of sensor 
+- `wifi`: wifi monitoring state of sensor
 - `blue`: bluetooth monitoring state of sensor
 
 **Sequence**
@@ -236,45 +247,12 @@ GatewayPorts yes
 sudo usermod -s /usr/sbin/nologin sensorSSH;
 ```
 
-add `"ip": "kerrigan"` in pheromon `PRIVATE.json` where kerrigan is the name of the host in `.ssh/config` 
-
-## PRIVATE files
-
-There are 2 PRIVATE files:
-
-- `secret.json`: **this file is very sensitive**. Leaking it would potentially allow people to access your db, server, sensors, etc... It should not be required in non protected clients. Here, the only client that requires it is `Admin`, whose access is protected by `html_token`.
-```
-{
-    "server_ip": ..., // your server ip, used by the sensor updater
-    "html_token": ..., // token you should use to protect the access to your Admin client or database API
-    "mqtt_token": ..., // MQTT for the broker to authenticate sensor
-    "cmd_token": ... // token to allow cmd sending to sensor
-}
-```
-
-`server_ip` is used in `api/maestro.js`.
-
-`html_token` is used in `api/api.js` and `api/routes.js`.
-
-`mqtt_token` is used in `api/api.js` and `broker/index.js`.
-
-`cmd_token` is used in `api/maestro.js` and `api/clients/Admin/src/main.js`.
-
-- `mapbox.json` : this file is not very sensitive. It only contains mapbox infos
-```
-{
-    "token": ..., // token for your mapbox account
-    "map_id": ..., // id of your map background
-}
-```
-Both `mapbox.json` fields are used in `api/clients/Dashboard/src/main.js`.
+Use `kerrigan"` as where kerrigan is the name of the host in `.ssh/config`
 
 ## Licence MIT
 
-## Contribute :
+## Contribute
 
 * Clone the repository.
-
 * Create a new branch to work in.
-
 * Make a pull request explaining why and what you changed.

@@ -14,17 +14,17 @@ var bodyParser = require('body-parser');
 var debug = require('../tools/debug');
 var routes = require('./routes.js');
 
-var PRIVATE = require('../PRIVATE/secret.json');
+var PORT = process.env.PORT || 3000;
 var DEBUG = process.env.NODE_ENV === 'development';
+var isAdmin = require('./is-authenticated')(DEBUG);
 
 var server = new http.Server(app);
 var io = require('socket.io')(server);
 io.set('origins', '*:*');
 
 // Creating API-side MQTT client: maestro !
-require('./maestro')(PRIVATE.mqtt_token, io);
+require('./maestro')(process.env.BROKER_SECRET, io);
 
-var PORT = process.env.VIRTUAL_PORT;
 
 //CORS for GET
 app.use(function(req, res, next) {
@@ -51,29 +51,16 @@ app.get('/', function(req, res){
     res.redirect('/Dashboard');
 });
 
-app.get('/Admin', function(req, res){ // maybe not necessary
-    if(req.query.s === PRIVATE.html_token || DEBUG)
-        res.sendFile(path.join(__dirname, './clients/Admin/index.html'));
-    else
-        res.status(403).send({success: false, message: 'No token provided.'});
+app.get('/Admin', isAdmin, function(req, res){ // maybe not necessary
+  res.sendFile(path.join(__dirname, './clients/Admin/index.html'));
 });
-
-app.get('/Admin-browserify-bundle.js', function(req, res){
-    res.sendFile(path.join(__dirname, './clients/Admin-browserify-bundle.js'));
-});
-
-app.get('/Dashboard-browserify-bundle.js', function(req, res){
-    res.sendFile(path.join(__dirname, './clients/Dashboard-browserify-bundle.js'));
-});
-
+app.use('/Admin-browserify-bundle.js', express.static(path.join(__dirname, './clients/Admin-browserify-bundle.js')));
+app.use('/Dashboard-browserify-bundle.js', express.static(path.join(__dirname, './clients/Dashboard-browserify-bundle.js')));
 
 routes(app, debug);
 
 server.listen(PORT, function () {
-    console.log('Server running on', [
-        'http://localhost:',
-        PORT
-    ].join(''));
+    console.log('Server running on http://localhost:%s', PORT);
 });
 
 

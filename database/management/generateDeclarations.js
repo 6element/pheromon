@@ -6,7 +6,7 @@ var fs = require('fs');
 var path = require('path');
 var generateSqlDefinition = require('sql-generate');
 
-var CONNECTION_STRING = require('./getDbConst.js').CONNECTION_STRING;
+var CONNECTION_STRING = process.env.DATABASE_URL;
 
 module.exports = function() {
     return new Promise(function(resolve, reject) {

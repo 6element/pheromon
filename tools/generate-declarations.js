@@ -7,17 +7,7 @@ var path = require('path');
 
 var generateSqlDefinition = require('sql-generate');
 
-var conString = [
-    'postgres://',
-    process.env.POSTGRES_USER,
-    ':', 
-    process.env.POSTGRES_PASSWORD,
-    '@',
-    process.env.DB_PORT_5432_TCP_ADDR,
-    ':',
-    process.env.DB_PORT_5432_TCP_PORT,
-    '/postgres'
-].join('');
+var conString = process.env.DATABASE_URL;
 
 generateSqlDefinition({ dsn: conString }, function(err, definitions) {
     if (err) {

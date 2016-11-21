@@ -4,9 +4,9 @@
   "description": "Reducing waste with sensors and an app",
   "main": "index.js",
   "scripts": {
-    "postinstall": "if [ -d .git ]; then cp ./git-hooks/pre-commit ./.git/hooks/pre-commit; chmod a+x ./.git/hooks/pre-commit; fi",
+    "postinstall": "npm run install-git-hooks && npm run build",
+    "install-git-hooks": "if [ -d .git ]; then cp ./git-hooks/pre-commit ./.git/hooks/pre-commit; chmod a+x ./.git/hooks/pre-commit; fi",
     "lint": "eslint .",
-    "prebuild": "npm install",
     "build:dashboard": "browserify api/clients/Dashboard/src/main.js -o api/clients/Dashboard-browserify-bundle.js -v",
     "build:admin": "browserify api/clients/Admin/src/main.js -o api/clients/Admin-browserify-bundle.js -v",
     "build": "npm-run-all --parallel 'build:*'",
@@ -19,7 +19,8 @@
     "dev:broker": "nodemon -L --watch broker broker/index.js",
     "preprod": "npm run build",
     "prealpha": "npm run build",
-    "test": "docker-compose -p pheromontest -f compose-test.yml up --force-recreate",
+    "test": "node ./tests/index.js",
+    "postest": "npm run lint",
     "dev": "npm-run-all --parallel 'dev:*'",
     "prod": "npm-run-all --parallel 'prod:*'",
     "postdev": "npm run watch",
@@ -29,6 +30,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/anthill/pheromon.git"
+  },
+  "engines": {
+    "node": "4.x.x"
+  },
+  "browserify": {
+    "transform": [
+      "envify"
+    ]
   },
   "keywords": [
     "app",
@@ -50,6 +59,7 @@
     "browserify": "^10.2.0",
     "compression": "^1.4.4",
     "dygraphs": "^1.1.1",
+    "envify": "^3.4.1",
     "es6-shim": "^0.31.2",
     "express": "^4.12.4",
     "immutable": "^3.7.4",

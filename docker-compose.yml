@@ -1,0 +1,59 @@
+version: '2'
+
+services:
+  api:
+   build: .
+   command: node api/api.js
+   depends_on:
+      - db
+      - broker
+   ports:
+     - "4000:4000"
+   environment:
+      - BROKER_URL=mqtt://broker:1883
+      - BROKER_SECRET=DANGER_LOCALHOST
+      - API_WRITE_SECRET=dev
+      - API_ENDPOINT=http://localhost:4000
+      - DATABASE_URL=postgres://postgres:elements@db:5432/postgres
+      - SENSOR_API_HOST=localhost:4000
+      - MAPBOX_MAP_ID=
+      - MAPBOX_TOKEN=
+      - PORT=4000
+      # Updater variables
+      - UPDATER_RANGE_START=2200
+      - UPDATER_RANGE_SIZE=10
+      - UPDATER_PLAYBOOK_FOLDER="/pheromon/updateFiles/"
+      - UPDATER_SENSORS_PORT=9632
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+   volumes:
+      - ./:/pheromon
+      # Ansible playbooks for the updater
+      #- ./updateFiles/:/pheromon/updateFiles/:ro
+      # SSH configuration
+      #- /home/sensorSSH/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+      #- /home/sensorSSH/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub:ro
+      #- /home/sensorSSH/.ssh/known_hosts:/root/.ssh/known_hosts
+      #- /etc/ssh/ssh_config:/etc/ssh/ssh_config:ro
+   tty: true
+
+  broker:
+    build: .
+    command: node broker/index.js
+    depends_on:
+      - db
+      - redis
+    environment:
+      - BROKER_URL=mqtt://broker:1883
+      - BROKER_SECRET=DANGER_LOCALHOST
+      - DATABASE_URL=postgres://postgres:elements@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+    volumes:
+      - ./:/pheromon
+
+  db:
+    image: postgres:9.4
+    environment:
+      - POSTGRES_PASSWORD=elements
+
+  redis:
+    image: redis:3-alpine

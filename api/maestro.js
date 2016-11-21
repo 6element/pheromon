@@ -9,7 +9,6 @@ var makeMap = require('../tools/makeMap');
 var sendReq = require('../tools/sendNodeReq');
 var database = require('../database');
 var Updater = require('./updater.js');
-var PRIVATE = require('../PRIVATE/secret.json');
 
 var SENSOR_STATUS = require('./utils/sensorStatus.js');
 
@@ -22,15 +21,13 @@ var UPDATER_RANGE_START = parseInt(process.env.UPDATER_RANGE_START, 10) || 2200;
 var UPDATER_RANGE_SIZE = parseInt(process.env.UPDATER_RANGE_SIZE, 10) || 50;
 var UPDATER_PLAYBOOK_FOLDER = process.env.UPDATER_PLAYBOOK_FOLDER || '../updateFiles/';
 var UPDATER_SENSORS_PORT = parseInt(process.env.UPDATER_SENSORS_PORT, 10) || 22;
-// See PRIVATE.json
-var UPDATER_SERVER_IP = PRIVATE.server_ip || 'localhost';
-var BROKER_ADDRESS = process.env.NODE_ENV === 'test' ? 'broker' : 'localhost';
+var SENSOR_API_HOST = process.env.SENSOR_API_HOST || 'localhost';
 
 module.exports = function(authToken, io){
 
     var updater = new Updater(authToken, UPDATER_RANGE_START, UPDATER_RANGE_SIZE);
 
-    var maestro = mqtt.connect('mqtt://'+ BROKER_ADDRESS + ':' + process.env.BROKER_PORT, {
+    var maestro = mqtt.connect(process.env.BROKER_URL, {
         username: 'maestro',
         password: authToken,
         clientId: 'maestro'
@@ -56,9 +53,9 @@ module.exports = function(authToken, io){
             socket.on('cmd', function(msg) {
 
                 // check cmd token
-                if (msg.token === PRIVATE.cmd_token){
+                if (msg.token === process.env.SENSOR_WRITE_SECRET){
                     console.log('cmd was received with correct token');
-                    
+
                     var cmd = msg.cmd;
 
                     var commandLine = cmd.command.toLowerCase().split(' ');
@@ -78,7 +75,7 @@ module.exports = function(authToken, io){
                                         return sensor.sim === sim;
                                     });
                                 }),
-                                'sensorSSH' + '@' + UPDATER_SERVER_IP,
+                                'sensorSSH' + '@' + SENSOR_API_HOST,
                                 UPDATER_SENSORS_PORT);
                             }
                             catch (err) {
@@ -99,7 +96,7 @@ module.exports = function(authToken, io){
                 }
                 else
                     console.log('cmd was received with wrong token');
-                
+
             });
         });
 
@@ -179,7 +176,7 @@ module.exports = function(authToken, io){
                                 (origin:) -> so that pheromon knows it needs to send back smg
                             }
                         */
-                        
+
                         decoder.decodeMessage(message, type)
                         .then(function(data){
                             debug('Measurement to register', data);
@@ -199,7 +196,7 @@ module.exports = function(authToken, io){
                                     var updateSensorStatusP;
                                     if (sensor.client_status === 'disconnected')
                                         updateSensorStatusP = database.Sensors.update(sensor.sim, {client_status: 'connected'});
-                                    
+
                                     Promise.all([createMeasurementP, updateSensorStatusP]).then(function() {
                                         switch(type){
                                             case 'wifi':
@@ -248,9 +245,9 @@ module.exports = function(authToken, io){
                         .catch(function(err){
                             console.log('ERROR in decoding', err);
                         });
-                                               
+
                         break;
-                    
+
                     case 'cmdResult':
                         var parsedCommand = JSON.parse(message);
                         database.Sensors.update(sensor.sim, {
@@ -334,7 +331,7 @@ module.exports = function(authToken, io){
                     fakeSensor.publish('status/'+ fakeSim +'/wifi', 'recording');
                     fakeSensor.publish('status/'+ fakeSim +'/bluetooth', 'recording');
                     fakeSensor.publish('cmdResult/' + fakeSim, JSON.stringify({command: 'status', result: 'OK'}));
-                } 
+                }
             });
 
             setInterval(function(){
